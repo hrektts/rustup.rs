@@ -130,7 +130,7 @@ pub mod curl {
 
     extern crate curl;
 
-    use self::curl::easy::Easy;
+    use self::curl::easy::{Easy, SslOpt};
     use errors::*;
     use std::cell::RefCell;
     use std::str;
@@ -165,6 +165,9 @@ pub mod curl {
 
             // Take at most 30s to connect
             try!(handle.connect_timeout(Duration::new(30, 0)).chain_err(|| "failed to set connect timeout"));
+
+            try!(handle.ssl_options(SslOpt::new().no_revoke(true))
+                 .chain_err(|| "failed to disable certificate revocation checks"));
 
             {
                 let cberr = RefCell::new(None);
